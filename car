@@ -1,0 +1,103 @@
+--funny car?!? (not by me creds to the owner)
+local speeding = 10
+local breakingspeed = speeding / 15
+local turningspeed = 1
+local unturningspeed = turningspeed * 2.5
+local maxspeed = 36
+local maxturning = 1.2
+local carLength = 4
+local hrpoffset = CFrame.new(0,-1.2,0)
+
+local c=game:GetService("Players").LocalPlayer.Character
+local function gp(p,n,cl)
+	if typeof(p)=="Instance" then
+		local c=p:GetChildren()
+		for i=1,#c do
+			local v=c[i]
+			if (v.Name==n) and v:IsA(cl) then
+				return v
+			end
+		end
+	end
+	return nil
+end
+local hrp=gp(c,"HumanoidRootPart","BasePart")
+if not hrp then
+	return
+end
+local hum=c:FindFirstChildOfClass("Humanoid")
+if not hum then
+    return
+end
+if "wanna use humanoid.Sit" then
+    hum.Sit=true
+elseif "wanna load animation track for r6" and (hum.RigType==Enum.HumanoidRigType.R6) then
+    local a=Instance.new("Animation")
+    a.AnimationId="http://www.roblox.com/asset/?id=178130996"
+    hum:LoadAnimation(a):Play(0.001,10000,1)
+end
+
+local ws=game:FindFirstChildOfClass("Workspace")
+local uis=game:FindFirstChildOfClass("UserInputService")
+local gs=game:FindFirstChildOfClass("GuiService")
+local rs=game:FindFirstChildOfClass("RunService")
+local v3=Vector3.new
+local cf=CFrame.new
+local angles=CFrame.Angles
+local clamp=math.clamp
+local sin=math.sin
+local osclock=os.clock
+local v3_0=v3(0,0,0)
+local CarCF=hrp.CFrame
+CarCF=cf(CarCF.Position,CarCF.Position+CarCF.LookVector*v3(1,0,1))*hrpoffset
+local Fvel=0
+local Rvel=0
+local FrontWheelsRot=0
+local sine=osclock()
+local lastsine=sine
+rs.Heartbeat:Connect(function()
+	sine=osclock()
+	local deltaTime=sine-lastsine
+	lastsine=sine
+	
+	local allowinput = not (gs.MenuIsOpen or uis:GetFocusedTextBox())
+	
+	if allowinput and uis:IsKeyDown(Enum.KeyCode.W) then
+		Rvel=clamp(Rvel+speeding*deltaTime,-maxspeed,maxspeed)
+	elseif allowinput and uis:IsKeyDown(Enum.KeyCode.S) then
+		Rvel=clamp(Rvel-speeding*deltaTime,-maxspeed,maxspeed)
+	elseif Rvel>0 then
+		Rvel=clamp(Rvel-breakingspeed*deltaTime,0,maxspeed)
+	elseif Rvel<0 then
+		Rvel=clamp(Rvel+breakingspeed*deltaTime,-maxspeed,0)
+	end
+	
+	if allowinput and uis:IsKeyDown(Enum.KeyCode.A) then
+		FrontWheelsRot=clamp(FrontWheelsRot+turningspeed*deltaTime,-maxturning,maxturning)
+	elseif allowinput and uis:IsKeyDown(Enum.KeyCode.D) then
+		FrontWheelsRot=clamp(FrontWheelsRot-turningspeed*deltaTime,-maxturning,maxturning)
+	elseif FrontWheelsRot>0 then
+		FrontWheelsRot=clamp(FrontWheelsRot-unturningspeed*deltaTime,0,maxturning)
+	elseif FrontWheelsRot<0 then
+		FrontWheelsRot=clamp(FrontWheelsRot+unturningspeed*deltaTime,-maxturning,0)
+	end
+	
+	local CF0=CarCF*angles(0,FrontWheelsRot,0)+(CarCF.LookVector*carLength/2)
+	local CF1=CarCF-(CarCF.LookVector*carLength/2)
+	
+	local RvelLv=CF1.LookVector*Rvel
+	
+	Fvel=CF0.LookVector.X*RvelLv.X+CF0.LookVector.Z*RvelLv.Z
+	
+	local FvelLv=CF0.LookVector*Fvel
+	
+	local carvel=(FvelLv+RvelLv*2.5)/3.5
+	
+	local oldpos=CarCF.Position
+	local newpos=oldpos+carvel*deltaTime
+	--print(oldpos,newpos)
+	CarCF=cf(newpos,CF0.Position+FvelLv*deltaTime)
+	hrp.CFrame=CarCF
+	hrp.Velocity=carvel
+	hrp.RotVelocity=v3_0
+end)
