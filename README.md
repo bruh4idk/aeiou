@@ -1,0 +1,2 @@
+# aeiou
+funny scripts
