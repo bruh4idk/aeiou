@@ -1,0 +1,17 @@
+-- not founded by me
+-- the limit is 226 messages i think, and dont put very big messages or else you'll get kicked
+local anim = Instance.new('Animation')
+anim.AnimationId = 'rbxassetid://'..math.random(1,10^9)..')'..[[
+
+            |---------------------------|
+                      (ur name here)
+                     
+                 ur message here
+                 
+                
+            |---------------------------|
+]]
+
+local track = game.Players.LocalPlayer.Character.Humanoid.Animator:LoadAnimation(anim)
+track:Play()
+anim:Destroy()
