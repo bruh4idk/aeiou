@@ -1,0 +1,23 @@
+-- reel run this and then ur unanchored or any like fe associated script idc
+local Players = game:GetService("Players")
+	local RunService = game:GetService("RunService")
+	local LocalPlayer = Players.LocalPlayer
+
+	if not getgenv().Network then
+		getgenv().Network = {
+			BaseParts = {};
+			FakeConnections = {};
+			Connections = {};
+			Output = {
+				Enabled = true;
+				Prefix = "[NETWORK] ";
+				Send = function(Type,Output,BypassOutput)
+					if typeof(Type) == "function" and (Type == print or Type == warn or Type == error) and typeof(Output) == "string" and (typeof(BypassOutput) == "nil" or typeof(BypassOutput) == "boolean") then
+						if Network["Output"].Enabled or BypassOutput then
+							Type(Network["Output"].Prefix..Output);
+						end;
+					elseif Network["Output"].Enabled then
+						error(Network["Output"].Prefix.."Output Send Error : Invalid syntax.");
+					end
+				end } }
+                end
