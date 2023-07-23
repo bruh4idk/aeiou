@@ -1,2 +1,2 @@
 # aeiou
-funny scripts
+funny and goofy scripts
